@@ -98,4 +98,34 @@ class DatabaseJobStoreTest extends TestCase
         $job = $this->store->pop('default');
         $this->assertNull($job);
     }
+
+    public function test_it_can_cancel_a_job(): void
+    {
+        $id = $this->store->push('default', SampleJob::class, ['message' => 'To be cancelled']);
+        $this->store->cancel($id);
+
+        $this->assertDatabaseHas('taskflow_jobs', [
+            'id' => $id,
+            'status' => 'cancelled',
+        ]);
+    }
+
+    public function test_it_can_retry_a_failed_job(): void
+    {
+        $id = $this->store->push('default', SampleJob::class, ['message' => 'To fail']);
+        $this->store->fail($id, 'some exception');
+
+        $this->assertCount(1, $this->store->getFailed());
+
+        $this->store->retry($id);
+
+        $this->assertDatabaseHas('taskflow_jobs', [
+            'id' => $id,
+            'status' => 'pending',
+            'attempts' => 0,
+            'failed_at' => null,
+            'exception' => null,
+        ]);
+        $this->assertCount(0, $this->store->getFailed());
+    }
 }

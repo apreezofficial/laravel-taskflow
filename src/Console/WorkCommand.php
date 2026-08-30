@@ -5,6 +5,7 @@ namespace Idoff\LaravelTaskflow\Console;
 use Illuminate\Console\Command;
 use Idoff\LaravelTaskflow\TaskFlow;
 use Illuminate\Container\Container;
+use Illuminate\Support\Facades\RateLimiter;
 use Throwable;
 
 class WorkCommand extends Command
@@ -12,7 +13,8 @@ class WorkCommand extends Command
     protected $signature = 'taskflow:work
                             {--queue=default : The queue to watch}
                             {--sleep=3 : Seconds to sleep when no jobs are available}
-                            {--once : Only process the first available job and exit}';
+                            {--once : Only process the first available job and exit}
+                            {--rate-limit=0 : Max jobs to process per minute (0 for unlimited)}';
 
     protected $description = 'Start processing jobs on the TaskFlow queue';
 
@@ -24,14 +26,29 @@ class WorkCommand extends Command
 
         $this->listenForSignals();
 
+        $queue = $this->option('queue');
+        $rateLimit = (int) $this->option('rate-limit');
+
         while (true) {
             if ($this->shouldQuit) {
                 $this->info("Worker shutting down gracefully.");
                 break;
             }
 
+            // Check rate limiter
+            if ($rateLimit > 0) {
+                $key = "taskflow:limiter:{$queue}";
+                if (RateLimiter::tooManyAttempts($key, $rateLimit)) {
+                    $seconds = RateLimiter::availableIn($key);
+                    $this->info("Rate limit exceeded for queue {$queue}. Sleeping for {$seconds} seconds.");
+                    sleep(max(1, $seconds));
+                    continue;
+                }
+                RateLimiter::hit($key, 60);
+            }
+
             try {
-                $job = $taskflow->getStore()->pop($this->option('queue'));
+                $job = $taskflow->getStore()->pop($queue);
 
                 if ($job) {
                     $this->processJob($taskflow, $job);
@@ -62,10 +79,13 @@ class WorkCommand extends Command
         $data = $payload['data'];
         $attempts = (int) $jobData['attempts'];
         $maxAttempts = (int) $jobData['max_attempts'];
+        $timeout = (int) ($jobData['timeout'] ?? 60);
 
         $this->info("[$id] Processing: $jobClass (Attempt $attempts/$maxAttempts)");
 
         try {
+            $this->registerTimeoutAlarm($timeout);
+
             // Instantiate the job via container (injecting constructor parameters if matching keys exist, or using empty constructor)
             $jobInstance = $this->resolveJob($jobClass, $data);
 
@@ -78,9 +98,12 @@ class WorkCommand extends Command
                 throw new \RuntimeException("Job class does not define a handle method or __invoke.");
             }
 
+            $this->disableTimeoutAlarm();
+
             $taskflow->getStore()->complete($id);
             $this->info("[$id] Processed: $jobClass");
         } catch (Throwable $e) {
+            $this->disableTimeoutAlarm();
             $this->error("[$id] Failed: $jobClass - " . $e->getMessage());
 
             if ($attempts < $maxAttempts) {
@@ -138,6 +161,26 @@ class WorkCommand extends Command
             pcntl_signal(SIGINT, function () {
                 $this->shouldQuit = true;
             });
+        }
+    }
+
+    protected function registerTimeoutAlarm(int $timeout): void
+    {
+        if (extension_loaded('pcntl')) {
+            pcntl_async_signals(true);
+
+            pcntl_signal(SIGALRM, function () {
+                throw new \RuntimeException("Job execution exceeded timeout limit.");
+            });
+
+            pcntl_alarm($timeout);
+        }
+    }
+
+    protected function disableTimeoutAlarm(): void
+    {
+        if (extension_loaded('pcntl')) {
+            pcntl_alarm(0);
         }
     }
 }

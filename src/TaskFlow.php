@@ -61,6 +61,30 @@ class TaskFlow
     }
 
     /**
+     * Cancel a job.
+     */
+    public function cancel(string $id): void
+    {
+        $this->store->cancel($id);
+    }
+
+    /**
+     * Get list of failed jobs.
+     */
+    public function getFailed(): array
+    {
+        return $this->store->getFailed();
+    }
+
+    /**
+     * Retry a failed job.
+     */
+    public function retry(string $id): void
+    {
+        $this->store->retry($id);
+    }
+
+    /**
      * Extract public/protected properties of a job object to pass as constructor arguments.
      */
     protected function getJobProperties(object $job): array

@@ -7,6 +7,9 @@ use Idoff\LaravelTaskflow\Contracts\JobStore;
 use Idoff\LaravelTaskflow\Stores\DatabaseJobStore;
 use Idoff\LaravelTaskflow\Stores\RedisJobStore;
 use Idoff\LaravelTaskflow\Console\WorkCommand;
+use Idoff\LaravelTaskflow\Console\CancelCommand;
+use Idoff\LaravelTaskflow\Console\FailedJobsCommand;
+use Idoff\LaravelTaskflow\Console\RetryCommand;
 
 class TaskflowServiceProvider extends ServiceProvider
 {
@@ -44,6 +47,9 @@ class TaskflowServiceProvider extends ServiceProvider
 
             $this->commands([
                 WorkCommand::class,
+                CancelCommand::class,
+                FailedJobsCommand::class,
+                RetryCommand::class,
             ]);
         }
     }

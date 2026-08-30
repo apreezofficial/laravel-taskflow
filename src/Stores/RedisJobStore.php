@@ -102,6 +102,7 @@ class RedisJobStore implements JobStore
         $now = Carbon::now()->timestamp;
         Redis::hset("{$this->prefix}:job:{$id}", 'status', 'completed');
         Redis::hset("{$this->prefix}:job:{$id}", 'updated_at', $now);
+        Redis::srem("{$this->prefix}:failed", $id);
     }
 
     public function fail(string $id, string $exception): void
@@ -111,6 +112,7 @@ class RedisJobStore implements JobStore
         Redis::hset("{$this->prefix}:job:{$id}", 'failed_at', $now);
         Redis::hset("{$this->prefix}:job:{$id}", 'exception', $exception);
         Redis::hset("{$this->prefix}:job:{$id}", 'updated_at', $now);
+        Redis::sadd("{$this->prefix}:failed", $id);
     }
 
     public function release(string $id, int $delay = 0): void
@@ -124,11 +126,63 @@ class RedisJobStore implements JobStore
         Redis::hset("{$this->prefix}:job:{$id}", 'reserved_at', '');
         Redis::hset("{$this->prefix}:job:{$id}", 'available_at', $availableAt);
         Redis::hset("{$this->prefix}:job:{$id}", 'updated_at', $now);
+        Redis::srem("{$this->prefix}:failed", $id);
 
         if ($delay > 0) {
             Redis::zadd("{$this->prefix}:queue:{$queue}:delayed", $availableAt, $id);
         } else {
             Redis::zadd("{$this->prefix}:queue:{$queue}:pending", -$priority, $id);
         }
+    }
+
+    public function cancel(string $id): void
+    {
+        $now = Carbon::now()->timestamp;
+        $queue = Redis::hget("{$this->prefix}:job:{$id}", 'queue');
+        
+        Redis::multi();
+        Redis::hset("{$this->prefix}:job:{$id}", 'status', 'cancelled');
+        Redis::hset("{$this->prefix}:job:{$id}", 'updated_at', $now);
+        if ($queue) {
+            Redis::zrem("{$this->prefix}:queue:{$queue}:pending", $id);
+            Redis::zrem("{$this->prefix}:queue:{$queue}:delayed", $id);
+        }
+        Redis::srem("{$this->prefix}:failed", $id);
+        Redis::exec();
+    }
+
+    public function getFailed(): array
+    {
+        $ids = Redis::smembers("{$this->prefix}:failed") ?: [];
+        $jobs = [];
+        foreach ($ids as $id) {
+            $jobData = Redis::hgetall("{$this->prefix}:job:{$id}");
+            if ($jobData) {
+                $jobData['payload'] = json_decode($jobData['payload'], true);
+                $jobs[] = $jobData;
+            }
+        }
+        return $jobs;
+    }
+
+    public function retry(string $id): void
+    {
+        $now = Carbon::now()->timestamp;
+        $queue = Redis::hget("{$this->prefix}:job:{$id}", 'queue');
+        $priority = Redis::hget("{$this->prefix}:job:{$id}", 'priority') ?: 0;
+
+        Redis::multi();
+        Redis::hset("{$this->prefix}:job:{$id}", 'status', 'pending');
+        Redis::hset("{$this->prefix}:job:{$id}", 'attempts', 0);
+        Redis::hset("{$this->prefix}:job:{$id}", 'reserved_at', '');
+        Redis::hset("{$this->prefix}:job:{$id}", 'failed_at', '');
+        Redis::hset("{$this->prefix}:job:{$id}", 'exception', '');
+        Redis::hset("{$this->prefix}:job:{$id}", 'available_at', $now);
+        Redis::hset("{$this->prefix}:job:{$id}", 'updated_at', $now);
+        Redis::srem("{$this->prefix}:failed", $id);
+        if ($queue) {
+            Redis::zadd("{$this->prefix}:queue:{$queue}:pending", -$priority, $id);
+        }
+        Redis::exec();
     }
 }

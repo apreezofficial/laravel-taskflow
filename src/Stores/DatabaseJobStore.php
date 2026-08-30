@@ -119,4 +119,44 @@ class DatabaseJobStore implements JobStore
                 'updated_at' => $now,
             ]);
     }
+
+    public function cancel(string $id): void
+    {
+        DB::table($this->table)
+            ->where('id', $id)
+            ->update([
+                'status' => 'cancelled',
+                'updated_at' => Carbon::now(),
+            ]);
+    }
+
+    public function getFailed(): array
+    {
+        return DB::table($this->table)
+            ->where('status', 'failed')
+            ->orderBy('failed_at', 'desc')
+            ->get()
+            ->map(function ($item) {
+                $job = (array) $item;
+                $job['payload'] = json_decode($job['payload'], true);
+                return $job;
+            })
+            ->toArray();
+    }
+
+    public function retry(string $id): void
+    {
+        $now = Carbon::now();
+        DB::table($this->table)
+            ->where('id', $id)
+            ->update([
+                'status' => 'pending',
+                'attempts' => 0,
+                'reserved_at' => null,
+                'failed_at' => null,
+                'exception' => null,
+                'available_at' => $now,
+                'updated_at' => $now,
+            ]);
+    }
 }

@@ -34,4 +34,19 @@ interface JobStore
      * Release a job back onto the queue.
      */
     public function release(string $id, int $delay = 0): void;
+
+    /**
+     * Cancel a job.
+     */
+    public function cancel(string $id): void;
+
+    /**
+     * Get list of failed jobs.
+     */
+    public function getFailed(): array;
+
+    /**
+     * Retry a failed job.
+     */
+    public function retry(string $id): void;
 }
