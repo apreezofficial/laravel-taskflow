@@ -2,3 +2,4 @@
 /.phpunit.cache/
 .env
 .DS_Store
+.phpunit.result.cache
