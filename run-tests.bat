@@ -1,0 +1,3 @@
+@echo off
+echo Running TaskFlow test suite...
+vendor\bin\phpunit
