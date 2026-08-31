@@ -1,23 +1,23 @@
 <?php
 
-namespace Idoff\LaravelTaskflow;
+namespace Apreezofficial\LaravelTaskflow;
 
 use Illuminate\Support\ServiceProvider;
-use Idoff\LaravelTaskflow\Contracts\JobStore;
-use Idoff\LaravelTaskflow\Contracts\MetricsStore;
-use Idoff\LaravelTaskflow\Contracts\ScheduleRegistry;
-use Idoff\LaravelTaskflow\Stores\DatabaseJobStore;
-use Idoff\LaravelTaskflow\Stores\RedisJobStore;
-use Idoff\LaravelTaskflow\Stores\DatabaseMetricsStore;
-use Idoff\LaravelTaskflow\Stores\RedisMetricsStore;
-use Idoff\LaravelTaskflow\Stores\DatabaseScheduleRegistry;
-use Idoff\LaravelTaskflow\Stores\RedisScheduleRegistry;
-use Idoff\LaravelTaskflow\Console\WorkCommand;
-use Idoff\LaravelTaskflow\Console\CancelCommand;
-use Idoff\LaravelTaskflow\Console\FailedJobsCommand;
-use Idoff\LaravelTaskflow\Console\RetryCommand;
-use Idoff\LaravelTaskflow\Console\MonitorCommand;
-use Idoff\LaravelTaskflow\Console\ScheduleRunCommand;
+use Apreezofficial\LaravelTaskflow\Contracts\JobStore;
+use Apreezofficial\LaravelTaskflow\Contracts\MetricsStore;
+use Apreezofficial\LaravelTaskflow\Contracts\ScheduleRegistry;
+use Apreezofficial\LaravelTaskflow\Stores\DatabaseJobStore;
+use Apreezofficial\LaravelTaskflow\Stores\RedisJobStore;
+use Apreezofficial\LaravelTaskflow\Stores\DatabaseMetricsStore;
+use Apreezofficial\LaravelTaskflow\Stores\RedisMetricsStore;
+use Apreezofficial\LaravelTaskflow\Stores\DatabaseScheduleRegistry;
+use Apreezofficial\LaravelTaskflow\Stores\RedisScheduleRegistry;
+use Apreezofficial\LaravelTaskflow\Console\WorkCommand;
+use Apreezofficial\LaravelTaskflow\Console\CancelCommand;
+use Apreezofficial\LaravelTaskflow\Console\FailedJobsCommand;
+use Apreezofficial\LaravelTaskflow\Console\RetryCommand;
+use Apreezofficial\LaravelTaskflow\Console\MonitorCommand;
+use Apreezofficial\LaravelTaskflow\Console\ScheduleRunCommand;
 
 class TaskflowServiceProvider extends ServiceProvider
 {

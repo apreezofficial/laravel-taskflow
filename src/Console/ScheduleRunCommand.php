@@ -1,10 +1,10 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Console;
+namespace Apreezofficial\LaravelTaskflow\Console;
 
 use Illuminate\Console\Command;
-use Idoff\LaravelTaskflow\TaskFlow;
-use Idoff\LaravelTaskflow\Contracts\ScheduleRegistry;
+use Apreezofficial\LaravelTaskflow\TaskFlow;
+use Apreezofficial\LaravelTaskflow\Contracts\ScheduleRegistry;
 use Cron\CronExpression;
 
 class ScheduleRunCommand extends Command

@@ -1,6 +1,6 @@
 # Laravel TaskFlow
 
-[![CI](https://github.com/idoff/laravel-taskflow/actions/workflows/ci.yml/badge.svg)](https://github.com/idoff/laravel-taskflow/actions)
+[![CI](https://github.com/apreezofficial/laravel-taskflow/actions/workflows/ci.yml/badge.svg)](https://github.com/apreezofficial/laravel-taskflow/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 **Laravel TaskFlow** is a production-quality, high-performance asynchronous job processing engine for Laravel. It provides highly reliable database and Redis-backed task runners, custom concurrency locking, automatic backoff retries, rate limiting, and administrative CLI utilities.
@@ -21,7 +21,7 @@
 Add the library to your Laravel project via Composer:
 
 ```bash
-composer require idoff/laravel-taskflow
+composer require apreezofficial/laravel-taskflow
 ```
 
 ### Migration Setup (for Database driver)

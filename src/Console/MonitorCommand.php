@@ -1,10 +1,10 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Console;
+namespace Apreezofficial\LaravelTaskflow\Console;
 
 use Illuminate\Console\Command;
-use Idoff\LaravelTaskflow\TaskFlow;
-use Idoff\LaravelTaskflow\Contracts\MetricsStore;
+use Apreezofficial\LaravelTaskflow\TaskFlow;
+use Apreezofficial\LaravelTaskflow\Contracts\MetricsStore;
 
 class MonitorCommand extends Command
 {

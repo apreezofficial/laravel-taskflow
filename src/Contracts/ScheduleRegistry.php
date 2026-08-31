@@ -1,6 +1,6 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Contracts;
+namespace Apreezofficial\LaravelTaskflow\Contracts;
 
 interface ScheduleRegistry
 {

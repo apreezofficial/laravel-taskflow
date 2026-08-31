@@ -1,9 +1,9 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Console;
+namespace Apreezofficial\LaravelTaskflow\Console;
 
 use Illuminate\Console\Command;
-use Idoff\LaravelTaskflow\TaskFlow;
+use Apreezofficial\LaravelTaskflow\TaskFlow;
 
 class RetryCommand extends Command
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Tests\Feature;
+namespace Apreezofficial\LaravelTaskflow\Tests\Feature;
 
-use Idoff\LaravelTaskflow\Tests\TestCase;
-use Idoff\LaravelTaskflow\Tests\Fixtures\SampleJob;
-use Idoff\LaravelTaskflow\TaskFlow;
+use Apreezofficial\LaravelTaskflow\Tests\TestCase;
+use Apreezofficial\LaravelTaskflow\Tests\Fixtures\SampleJob;
+use Apreezofficial\LaravelTaskflow\TaskFlow;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class WorkerTest extends TestCase
@@ -107,17 +107,17 @@ class WorkerTest extends TestCase
     public function test_worker_runs_job_middleware(): void
     {
         $taskflow = $this->app->make(TaskFlow::class);
-        $taskflow->dispatch(new \Idoff\LaravelTaskflow\Tests\Fixtures\MiddlewareJob());
+        $taskflow->dispatch(new \Apreezofficial\LaravelTaskflow\Tests\Fixtures\MiddlewareJob());
 
-        \Idoff\LaravelTaskflow\Tests\Fixtures\SampleMiddleware::$wasCalled = false;
-        \Idoff\LaravelTaskflow\Tests\Fixtures\MiddlewareJob::$wasExecuted = false;
+        \Apreezofficial\LaravelTaskflow\Tests\Fixtures\SampleMiddleware::$wasCalled = false;
+        \Apreezofficial\LaravelTaskflow\Tests\Fixtures\MiddlewareJob::$wasExecuted = false;
 
         $this->artisan('taskflow:work', [
             '--queue' => 'default',
             '--once' => true,
         ])->assertExitCode(0);
 
-        $this->assertTrue(\Idoff\LaravelTaskflow\Tests\Fixtures\SampleMiddleware::$wasCalled);
-        $this->assertTrue(\Idoff\LaravelTaskflow\Tests\Fixtures\MiddlewareJob::$wasExecuted);
+        $this->assertTrue(\Apreezofficial\LaravelTaskflow\Tests\Fixtures\SampleMiddleware::$wasCalled);
+        $this->assertTrue(\Apreezofficial\LaravelTaskflow\Tests\Fixtures\MiddlewareJob::$wasExecuted);
     }
 }

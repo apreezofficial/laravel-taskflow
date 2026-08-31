@@ -1,8 +1,8 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Stores;
+namespace Apreezofficial\LaravelTaskflow\Stores;
 
-use Idoff\LaravelTaskflow\Contracts\JobStore;
+use Apreezofficial\LaravelTaskflow\Contracts\JobStore;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;

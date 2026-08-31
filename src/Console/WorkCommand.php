@@ -1,13 +1,13 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Console;
+namespace Apreezofficial\LaravelTaskflow\Console;
 
 use Illuminate\Console\Command;
-use Idoff\LaravelTaskflow\TaskFlow;
+use Apreezofficial\LaravelTaskflow\TaskFlow;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Pipeline\Pipeline;
-use Idoff\LaravelTaskflow\Contracts\MetricsStore;
+use Apreezofficial\LaravelTaskflow\Contracts\MetricsStore;
 use Throwable;
 
 class WorkCommand extends Command

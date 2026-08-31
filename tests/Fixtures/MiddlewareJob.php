@@ -1,6 +1,6 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Tests\Fixtures;
+namespace Apreezofficial\LaravelTaskflow\Tests\Fixtures;
 
 class MiddlewareJob
 {

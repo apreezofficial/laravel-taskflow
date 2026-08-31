@@ -1,8 +1,8 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Stores;
+namespace Apreezofficial\LaravelTaskflow\Stores;
 
-use Idoff\LaravelTaskflow\Contracts\MetricsStore;
+use Apreezofficial\LaravelTaskflow\Contracts\MetricsStore;
 use Illuminate\Support\Facades\DB;
 
 class DatabaseMetricsStore implements MetricsStore

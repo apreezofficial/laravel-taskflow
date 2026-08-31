@@ -1,9 +1,9 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Tests\Unit;
+namespace Apreezofficial\LaravelTaskflow\Tests\Unit;
 
-use Idoff\LaravelTaskflow\Tests\TestCase;
-use Idoff\LaravelTaskflow\Contracts\MetricsStore;
+use Apreezofficial\LaravelTaskflow\Tests\TestCase;
+use Apreezofficial\LaravelTaskflow\Contracts\MetricsStore;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DatabaseMetricsStoreTest extends TestCase

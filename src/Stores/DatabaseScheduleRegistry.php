@@ -1,8 +1,8 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Stores;
+namespace Apreezofficial\LaravelTaskflow\Stores;
 
-use Idoff\LaravelTaskflow\Contracts\ScheduleRegistry;
+use Apreezofficial\LaravelTaskflow\Contracts\ScheduleRegistry;
 use Illuminate\Support\Facades\DB;
 use Cron\CronExpression;
 use Carbon\Carbon;

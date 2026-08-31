@@ -1,10 +1,10 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Tests\Unit;
+namespace Apreezofficial\LaravelTaskflow\Tests\Unit;
 
-use Idoff\LaravelTaskflow\Tests\TestCase;
-use Idoff\LaravelTaskflow\Contracts\ScheduleRegistry;
-use Idoff\LaravelTaskflow\Tests\Fixtures\SampleJob;
+use Apreezofficial\LaravelTaskflow\Tests\TestCase;
+use Apreezofficial\LaravelTaskflow\Contracts\ScheduleRegistry;
+use Apreezofficial\LaravelTaskflow\Tests\Fixtures\SampleJob;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;

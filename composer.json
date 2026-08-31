@@ -1,5 +1,5 @@
 {
-    "name": "idoff/laravel-taskflow",
+    "name": "apreezofficial/laravel-taskflow",
     "description": "A production-quality asynchronous job processing system for Laravel.",
     "type": "library",
     "license": "MIT",
@@ -23,18 +23,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Idoff\\LaravelTaskflow\\": "src/"
+            "Apreezofficial\\LaravelTaskflow\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Idoff\\LaravelTaskflow\\Tests\\": "tests/"
+            "Apreezofficial\\LaravelTaskflow\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Idoff\\LaravelTaskflow\\TaskflowServiceProvider"
+                "Apreezofficial\\LaravelTaskflow\\TaskflowServiceProvider"
             ]
         }
     },

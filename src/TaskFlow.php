@@ -1,8 +1,8 @@
 <?php
 
-namespace Idoff\LaravelTaskflow;
+namespace Apreezofficial\LaravelTaskflow;
 
-use Idoff\LaravelTaskflow\Contracts\JobStore;
+use Apreezofficial\LaravelTaskflow\Contracts\JobStore;
 use Illuminate\Container\Container;
 
 class TaskFlow
@@ -103,7 +103,7 @@ class TaskFlow
     ): void {
         $queue = $queue ?? $this->defaultQueue;
         
-        $registry = Container::getInstance()->make(\Idoff\LaravelTaskflow\Contracts\ScheduleRegistry::class);
+        $registry = Container::getInstance()->make(\Apreezofficial\LaravelTaskflow\Contracts\ScheduleRegistry::class);
         $registry->register($jobClass, $data, $cronExpression, $queue);
     }
 

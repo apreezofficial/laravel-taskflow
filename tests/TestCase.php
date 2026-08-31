@@ -1,9 +1,9 @@
 <?php
 
-namespace Idoff\LaravelTaskflow\Tests;
+namespace Apreezofficial\LaravelTaskflow\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
-use Idoff\LaravelTaskflow\TaskflowServiceProvider;
+use Apreezofficial\LaravelTaskflow\TaskflowServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
 {
