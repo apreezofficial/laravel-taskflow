@@ -185,4 +185,15 @@ class RedisJobStore implements JobStore
         }
         Redis::exec();
     }
+
+    public function getQueueSizes(string $queue): array
+    {
+        return [
+            'pending' => (int) Redis::zcard("{$this->prefix}:queue:{$queue}:pending"),
+            'processing' => 0,
+            'completed' => 0,
+            'failed' => (int) Redis::scard("{$this->prefix}:failed"),
+            'cancelled' => 0,
+        ];
+    }
 }

@@ -4,12 +4,16 @@ namespace Idoff\LaravelTaskflow;
 
 use Illuminate\Support\ServiceProvider;
 use Idoff\LaravelTaskflow\Contracts\JobStore;
+use Idoff\LaravelTaskflow\Contracts\MetricsStore;
 use Idoff\LaravelTaskflow\Stores\DatabaseJobStore;
 use Idoff\LaravelTaskflow\Stores\RedisJobStore;
+use Idoff\LaravelTaskflow\Stores\DatabaseMetricsStore;
+use Idoff\LaravelTaskflow\Stores\RedisMetricsStore;
 use Idoff\LaravelTaskflow\Console\WorkCommand;
 use Idoff\LaravelTaskflow\Console\CancelCommand;
 use Idoff\LaravelTaskflow\Console\FailedJobsCommand;
 use Idoff\LaravelTaskflow\Console\RetryCommand;
+use Idoff\LaravelTaskflow\Console\MonitorCommand;
 
 class TaskflowServiceProvider extends ServiceProvider
 {
@@ -25,6 +29,15 @@ class TaskflowServiceProvider extends ServiceProvider
             return match ($driver) {
                 'redis' => new RedisJobStore(),
                 default => new DatabaseJobStore(),
+            };
+        });
+
+        $this->app->singleton(MetricsStore::class, function ($app) {
+            $driver = $app['config']->get('taskflow.driver', 'database');
+
+            return match ($driver) {
+                'redis' => new RedisMetricsStore(),
+                default => new DatabaseMetricsStore(),
             };
         });
 
@@ -50,6 +63,7 @@ class TaskflowServiceProvider extends ServiceProvider
                 CancelCommand::class,
                 FailedJobsCommand::class,
                 RetryCommand::class,
+                MonitorCommand::class,
             ]);
         }
     }

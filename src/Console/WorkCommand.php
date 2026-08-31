@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Idoff\LaravelTaskflow\TaskFlow;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\RateLimiter;
+use Idoff\LaravelTaskflow\Contracts\MetricsStore;
 use Throwable;
 
 class WorkCommand extends Command
@@ -83,6 +84,9 @@ class WorkCommand extends Command
 
         $this->info("[$id] Processing: $jobClass (Attempt $attempts/$maxAttempts)");
 
+        $startTime = microtime(true);
+        $queueName = $jobData['queue'] ?? 'default';
+
         try {
             $this->registerTimeoutAlarm($timeout);
 
@@ -102,9 +106,15 @@ class WorkCommand extends Command
 
             $taskflow->getStore()->complete($id);
             $this->info("[$id] Processed: $jobClass");
+
+            $duration = (microtime(true) - $startTime) * 1000;
+            $this->recordJobMetrics($queueName, $jobClass, 'completed', $duration);
         } catch (Throwable $e) {
             $this->disableTimeoutAlarm();
             $this->error("[$id] Failed: $jobClass - " . $e->getMessage());
+
+            $duration = (microtime(true) - $startTime) * 1000;
+            $this->recordJobMetrics($queueName, $jobClass, 'failed', $duration);
 
             if ($attempts < $maxAttempts) {
                 // Exponential backoff
@@ -113,6 +123,19 @@ class WorkCommand extends Command
                 $this->info("[$id] Released back to queue with delay of $delay seconds.");
             } else {
                 $taskflow->getStore()->fail($id, $e->getTraceAsString());
+            }
+        }
+    }
+
+    protected function recordJobMetrics(string $queue, string $jobClass, string $status, float $duration): void
+    {
+        if (Container::getInstance()->has(MetricsStore::class)) {
+            try {
+                $metrics = Container::getInstance()->make(MetricsStore::class);
+                $metrics->increment($queue, $jobClass, $status);
+                $metrics->recordLatency($queue, $jobClass, $duration);
+            } catch (Throwable $e) {
+                $this->error("Failed to write metrics: " . $e->getMessage());
             }
         }
     }

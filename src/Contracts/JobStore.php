@@ -49,4 +49,9 @@ interface JobStore
      * Retry a failed job.
      */
     public function retry(string $id): void;
+
+    /**
+     * Get queue sizes.
+     */
+    public function getQueueSizes(string $queue): array;
 }

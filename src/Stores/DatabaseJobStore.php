@@ -159,4 +159,22 @@ class DatabaseJobStore implements JobStore
                 'updated_at' => $now,
             ]);
     }
+
+    public function getQueueSizes(string $queue): array
+    {
+        $counts = DB::table($this->table)
+            ->where('queue', $queue)
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        return [
+            'pending' => $counts['pending'] ?? 0,
+            'processing' => $counts['processing'] ?? 0,
+            'completed' => $counts['completed'] ?? 0,
+            'failed' => $counts['failed'] ?? 0,
+            'cancelled' => $counts['cancelled'] ?? 0,
+        ];
+    }
 }

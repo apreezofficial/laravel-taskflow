@@ -80,4 +80,13 @@ class WorkerTest extends TestCase
         // First job runs, second job hits limit and worker does not run it immediately.
         $this->assertTrue(SampleJob::$wasExecuted);
     }
+
+    public function test_cli_can_monitor_queues(): void
+    {
+        $taskflow = $this->app->make(TaskFlow::class);
+        $taskflow->dispatch(new SampleJob('Job to monitor'));
+
+        $this->artisan('taskflow:monitor', ['--queue' => 'default'])
+            ->assertExitCode(0);
+    }
 }

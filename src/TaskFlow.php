@@ -85,6 +85,14 @@ class TaskFlow
     }
 
     /**
+     * Get sizes/metrics count of the queue.
+     */
+    public function getQueueSizes(string $queue): array
+    {
+        return $this->store->getQueueSizes($queue);
+    }
+
+    /**
      * Extract public/protected properties of a job object to pass as constructor arguments.
      */
     protected function getJobProperties(object $job): array
