@@ -103,6 +103,26 @@ app(TaskFlow::class)->dispatch(
 );
 ```
 
+### 3. Scheduling a Recurring Job
+
+Register cron-based schedules that are evaluated and queued automatically:
+
+```php
+// Register a recurring task using cron-syntax
+app(TaskFlow::class)->schedule(
+    jobClass: SendWelcomeEmail::class,
+    data: ['email' => 'admin@example.com'],
+    cronExpression: '*/5 * * * *', // Run every 5 minutes
+    queue: 'emails'
+);
+```
+
+To evaluate and dispatch due recurring tasks, run the schedule run daemon:
+
+```bash
+php artisan taskflow:schedule-run
+```
+
 ---
 
 ## Processing Queues (Artisan Worker)

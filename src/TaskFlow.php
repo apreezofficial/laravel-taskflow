@@ -93,6 +93,21 @@ class TaskFlow
     }
 
     /**
+     * Register a recurring scheduled job.
+     */
+    public function schedule(
+        string $jobClass,
+        array $data,
+        string $cronExpression,
+        ?string $queue = null
+    ): void {
+        $queue = $queue ?? $this->defaultQueue;
+        
+        $registry = Container::getInstance()->make(\Idoff\LaravelTaskflow\Contracts\ScheduleRegistry::class);
+        $registry->register($jobClass, $data, $cronExpression, $queue);
+    }
+
+    /**
      * Extract public/protected properties of a job object to pass as constructor arguments.
      */
     protected function getJobProperties(object $job): array

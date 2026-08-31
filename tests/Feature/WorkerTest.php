@@ -89,4 +89,18 @@ class WorkerTest extends TestCase
         $this->artisan('taskflow:monitor', ['--queue' => 'default'])
             ->assertExitCode(0);
     }
+
+    public function test_cli_can_run_schedules(): void
+    {
+        $taskflow = $this->app->make(TaskFlow::class);
+        $taskflow->schedule(SampleJob::class, ['message' => 'Scheduled Hello'], '* * * * *');
+
+        // Force it to be due by updating next_run_at to the past
+        \Illuminate\Support\Facades\DB::table('taskflow_schedules')
+            ->update(['next_run_at' => \Carbon\Carbon::now()->subMinute()]);
+
+        $this->artisan('taskflow:schedule-run')
+            ->expectsOutput("Dispatching scheduled job: " . SampleJob::class . " onto queue: default")
+            ->assertExitCode(0);
+    }
 }
