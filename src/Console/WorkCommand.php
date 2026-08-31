@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Idoff\LaravelTaskflow\TaskFlow;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Pipeline\Pipeline;
 use Idoff\LaravelTaskflow\Contracts\MetricsStore;
 use Throwable;
 
@@ -93,14 +94,26 @@ class WorkCommand extends Command
             // Instantiate the job via container (injecting constructor parameters if matching keys exist, or using empty constructor)
             $jobInstance = $this->resolveJob($jobClass, $data);
 
-            // Execute handle/invoke
-            if (method_exists($jobInstance, 'handle')) {
-                Container::getInstance()->call([$jobInstance, 'handle']);
-            } elseif (is_callable($jobInstance)) {
-                $jobInstance();
-            } else {
-                throw new \RuntimeException("Job class does not define a handle method or __invoke.");
+            // Resolve middleware array
+            $middleware = [];
+            if (method_exists($jobInstance, 'middleware')) {
+                $middleware = $jobInstance->middleware();
+            } elseif (property_exists($jobInstance, 'middleware')) {
+                $middleware = (array) $jobInstance->middleware;
             }
+
+            // Execute handle/invoke through Pipeline middleware chain
+            (new Pipeline(Container::getInstance()))
+                ->send($jobInstance)
+                ->through($middleware)
+                ->then(function ($jobInstance) {
+                    if (method_exists($jobInstance, 'handle')) {
+                        return Container::getInstance()->call([$jobInstance, 'handle']);
+                    } elseif (is_callable($jobInstance)) {
+                        return $jobInstance();
+                    }
+                    throw new \RuntimeException("Job class does not define a handle method or __invoke.");
+                });
 
             $this->disableTimeoutAlarm();
 

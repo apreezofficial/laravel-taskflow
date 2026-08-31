@@ -123,6 +123,45 @@ To evaluate and dispatch due recurring tasks, run the schedule run daemon:
 php artisan taskflow:schedule-run
 ```
 
+### 4. Job Middleware
+
+You can attach middleware to jobs to filter, log, lock, or throttle them. Create a middleware class with a `handle($job, $next)` method and return it from the job's `middleware()` method:
+
+```php
+namespace App\Jobs\Middleware;
+
+class LogJobRun
+{
+    public function handle($job, $next)
+    {
+        // Pre-execution logic
+        logger()->info("Running " . get_class($job));
+
+        $response = $next($job);
+
+        // Post-execution logic
+        return $response;
+    }
+}
+```
+
+Then register the middleware in your Job class:
+
+```php
+class SendWelcomeEmail
+{
+    public function middleware(): array
+    {
+        return [\App\Jobs\Middleware\LogJobRun::class];
+    }
+
+    public function handle(): void
+    {
+        // Execution
+    }
+}
+```
+
 ---
 
 ## Processing Queues (Artisan Worker)

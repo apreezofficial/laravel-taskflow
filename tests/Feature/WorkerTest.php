@@ -103,4 +103,21 @@ class WorkerTest extends TestCase
             ->expectsOutput("Dispatching scheduled job: " . SampleJob::class . " onto queue: default")
             ->assertExitCode(0);
     }
+
+    public function test_worker_runs_job_middleware(): void
+    {
+        $taskflow = $this->app->make(TaskFlow::class);
+        $taskflow->dispatch(new \Idoff\LaravelTaskflow\Tests\Fixtures\MiddlewareJob());
+
+        \Idoff\LaravelTaskflow\Tests\Fixtures\SampleMiddleware::$wasCalled = false;
+        \Idoff\LaravelTaskflow\Tests\Fixtures\MiddlewareJob::$wasExecuted = false;
+
+        $this->artisan('taskflow:work', [
+            '--queue' => 'default',
+            '--once' => true,
+        ])->assertExitCode(0);
+
+        $this->assertTrue(\Idoff\LaravelTaskflow\Tests\Fixtures\SampleMiddleware::$wasCalled);
+        $this->assertTrue(\Idoff\LaravelTaskflow\Tests\Fixtures\MiddlewareJob::$wasExecuted);
+    }
 }
